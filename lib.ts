@@ -1,4 +1,4 @@
-import { dlopen, ptr, suffix, read, CString } from "bun:ffi";
+import { dlopen, suffix } from "bun:ffi";
 import { Color, Colors, f32, i32, isInteger, throwIfNotF32, throwIfNotI32, toCString } from "./utils";
 
 const path = `libraylib.${suffix}`;
