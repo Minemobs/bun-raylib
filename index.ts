@@ -9,16 +9,18 @@ import {
   getMouseY,
   initWindow,
   isKeyDown,
+  isMouseButtonReleased,
   run,
   setTargetFPS,
 } from "./lib";
-import { Keys } from "./utils";
+import { Keys, MouseButton, Vector2 } from "./utils";
 
 const [WIDTH, HEIGHT] = [800, 450];
 
 initWindow(WIDTH, HEIGHT, "Hello World");
 setTargetFPS(60);
 
+const array : Vector2[] = [];
 run(() => {
   draw(() => {
     clearBackground("RAY_WHITE");
@@ -29,6 +31,17 @@ run(() => {
     }
     drawText("Mouse X: " + getMouseX(), WIDTH / 2, HEIGHT / 2 - 40, 20, "BLACK");
     drawText("Mouse Y: " + getMouseY(), WIDTH / 2, HEIGHT / 2 + 40, 20, "BLACK");
+    if(isMouseButtonReleased(MouseButton.LEFT)) {
+      if(array.length == 2) {
+        array[0] = array[1];
+        array[1] = {x: getMouseX(), y: getMouseY()};
+      } else {
+        array.push({x: getMouseX(), y: getMouseY()});
+      }
+    }
+    if(array.length === 2) {
+      drawLineV(array[0], array[1], "RED");
+    }
   });
 });
 

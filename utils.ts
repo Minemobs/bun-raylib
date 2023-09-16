@@ -69,6 +69,16 @@ export const Colors = {
 
 export type Color = keyof typeof Colors | i32;
 
+export const enum MouseButton {
+    LEFT,
+    RIGHT,
+    MIDDLE,
+    SIDE,
+    EXTRA,
+    FORWARD,
+    BACK
+}
+
 export const enum Keys {
     KEY_NULL = 0,
     KEY_APOSTROPHE = 39,

@@ -1,5 +1,5 @@
 import { dlopen, ptr, suffix } from "bun:ffi";
-import { Color, Colors, Keys, Vector2, f32, i32, isInteger, throwIfNotF32, throwIfNotI32, toCString, vec2DToArray } from "./utils";
+import { Color, Colors, Keys, MouseButton, Vector2, f32, i32, isInteger, throwIfNotF32, throwIfNotI32, toCString, vec2DToArray } from "./utils";
 
 const path = `libraylib.${suffix}`;
 
@@ -53,6 +53,18 @@ const {
     },
     GetCharPressed: {
         returns: "i32"
+    },
+    IsMouseButtonReleased: {
+        args: ["int"],
+        returns: "bool"
+    },
+    IsMouseButtonPressed: {
+        args: ["int"],
+        returns: "bool"
+    },
+    IsMouseButtonDown: {
+        args: ["int"],
+        returns: "bool"
     }
 });
 
@@ -150,4 +162,16 @@ export function drawLineV(startPos: Vector2, endPos: Vector2, color: Color) {
 
 export function drawTriangle(v1: Vector2, v2: Vector2, v3: Vector2, color: Color) {
     return raylibPtr.ptr_DrawTriangle(vec2DToArray(v1), vec2DToArray(v2), vec2DToArray(v3), toColor(color));
+}
+
+export function isMouseButtonReleased(button: MouseButton) {
+    return raylib.IsMouseButtonReleased(button);
+}
+
+export function isMouseButtonDown(button: MouseButton) {
+    return raylib.IsMouseButtonDown(button);
+}
+
+export function isMouseButtonPressed(button: MouseButton) {
+    return raylib.IsMouseButtonPressed(button);
 }
