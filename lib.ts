@@ -1,5 +1,5 @@
-import { dlopen, suffix } from "bun:ffi";
-import { Color, Colors, f32, i32, isInteger, throwIfNotF32, throwIfNotI32, toCString } from "./utils";
+import { dlopen, ptr, suffix } from "bun:ffi";
+import { Color, Colors, Keys, Vector2, f32, i32, isInteger, throwIfNotF32, throwIfNotI32, toCString, vec2DToArray } from "./utils";
 
 const path = `libraylib.${suffix}`;
 
@@ -29,6 +29,41 @@ const {
     },
     DrawFPS: {
         args: ["i32", "i32"]
+    },
+    IsKeyDown: {
+        args: ["i32"],
+        returns: "bool"
+    },
+    IsKeyReleased: {
+        args: ["i32"],
+        returns: "bool"
+    },
+    IsKeyPressed: {
+        args: ["i32"],
+        returns: "bool"
+    },
+    GetMouseX: {
+        returns: "i32"
+    },
+    GetMouseY: {
+        returns: "i32"
+    },
+    GetKeyPressed: {
+        returns: "i32"
+    },
+    GetCharPressed: {
+        returns: "i32"
+    }
+});
+
+const {
+    symbols: raylibPtr,
+} = dlopen(`libraylibptr.${suffix}`, {
+    ptr_DrawLineV: {
+        args: ["ptr", "ptr", "i32"],
+    },
+    ptr_DrawTriangle: {
+        args: ["ptr", "ptr", "ptr", "i32"]
     }
 });
 
@@ -81,4 +116,38 @@ export function drawText(text: string, posX: number, posY: number, fontSize: num
     throwIfNotI32(fontSize, "fontSize");
     if(typeof color === "number" && !isInteger(color)) throw new Error("color isn't a i32");
     raylib.DrawText(toCString(text), posX, posY, fontSize, toColor(color));
+}
+
+export function isKeyDown(key: Keys) : boolean {
+    return raylib.IsKeyDown(key);
+}
+export function isKeyPressed(key: Keys) : boolean {
+    return raylib.IsKeyPressed(key);
+}
+export function isKeyReleased(key: Keys) : boolean {
+    return raylib.IsKeyReleased(key);
+}
+
+export function getMouseX() {
+    return raylib.GetMouseX();
+}
+
+export function getMouseY() {
+    return raylib.GetMouseY();
+}
+
+export function getCharPressed() : i32 {
+    return raylib.GetCharPressed();
+}
+
+export function getKeyPressed() : Keys {
+    return raylib.GetKeyPressed();
+}
+
+export function drawLineV(startPos: Vector2, endPos: Vector2, color: Color) {
+    return raylibPtr.ptr_DrawLineV(vec2DToArray(startPos), vec2DToArray(endPos), toColor(color));
+}
+
+export function drawTriangle(v1: Vector2, v2: Vector2, v3: Vector2, color: Color) {
+    return raylibPtr.ptr_DrawTriangle(vec2DToArray(v1), vec2DToArray(v2), vec2DToArray(v3), toColor(color));
 }

@@ -172,3 +172,7 @@ libraylib.so
 bun.lockb
 test/test.o
 test/libtest.so
+natives/raylibptr.o
+test/testapp
+.vscode/settings.json
+libraylibptr.so

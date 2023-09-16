@@ -9,6 +9,7 @@
     "typescript": "^5.2.2"
   },
   "scripts": {
-    "preinstall": "bun run ./compile.ts"
+    "compile": "gcc -c -Wall -Werror -fpic natives/raylibptr.c -Lraylib -o natives/raylibptr.o && gcc -shared -lraylib -o libraylibptr.so natives/raylibptr.o",
+    "preinstall": "bun run ./compile.ts && bun run compile"
   }
 }
