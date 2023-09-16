@@ -1,5 +1,5 @@
-import { dlopen, ptr, suffix } from "bun:ffi";
-import { Color, Colors, Keys, MouseButton, Vector2, f32, i32, isInteger, throwIfNotF32, throwIfNotI32, toCString, vec2DToArray } from "./utils";
+import { dlopen, ptr, read, suffix, toArrayBuffer } from "bun:ffi";
+import { Color, Colors, Keys, MouseButton, Texture2D, Vector2, f32, i32, isInteger, textureToPointer, throwIfNotF32, throwIfNotI32, toCString, vec2DToArray } from "./utils";
 
 const path = `libraylib.${suffix}`;
 
@@ -65,7 +65,7 @@ const {
     IsMouseButtonDown: {
         args: ["int"],
         returns: "bool"
-    }
+    },
 });
 
 const {
@@ -76,6 +76,19 @@ const {
     },
     ptr_DrawTriangle: {
         args: ["ptr", "ptr", "ptr", "i32"]
+    },
+    ptr_LoadTexture: {
+        args: ["cstring"],
+        returns: "ptr"
+    },
+    ptr_UnloadTexture: {
+        args: ["ptr"]
+    },
+    ptr_DrawTexture: {
+        args: ["ptr", "i32", "i32", "i32"]
+    },
+    freeMem: {
+        args: ["ptr"]
     }
 });
 
@@ -174,4 +187,25 @@ export function isMouseButtonDown(button: MouseButton) {
 
 export function isMouseButtonPressed(button: MouseButton) {
     return raylib.IsMouseButtonPressed(button);
+}
+
+export function loadTexture(filePath: string) : Texture2D {
+    const pointer = raylibPtr.ptr_LoadTexture(toCString(filePath))!;
+    const texture : Texture2D = {
+        id: read.u32(pointer, 0),
+        width: read.i32(pointer, 4),
+        height: read.i32(pointer, 8),
+        mimaps: read.i32(pointer, 12),
+        format: read.i32(pointer, 16)
+    };
+    raylibPtr.freeMem(pointer);
+    return texture;
+}
+
+export function unloadTexture(texture: Texture2D) {
+    raylibPtr.ptr_UnloadTexture(textureToPointer(texture));
+}
+
+export function drawTexture(texture: Texture2D, vec: Vector2, color: Color) {
+    raylibPtr.ptr_DrawTexture(textureToPointer(texture), vec.x, vec.y, toColor(color));
 }

@@ -1,8 +1,22 @@
 import { ptr } from "bun:ffi";
 
+export type u32 = number;
 export type i32 = number;
 export type f32 = number;
-export type Vector2 = {x: f32, y: f32}
+export type Vector2 = { x: f32, y: f32 };
+export type Texture2D = { id: u32, width: i32, height: i32, mimaps: i32, format: i32 };
+export type Texture = Texture2D;
+
+export function textureToPointer(texture: Texture2D) {
+    const buff = new ArrayBuffer(20);
+    new Uint32Array(buff, 0, 1)[0] = texture.id;
+    const i32Array = new Int32Array(buff, 0, 4);
+    i32Array[1] = texture.width;
+    i32Array[2] = texture.height;
+    i32Array[3] = texture.mimaps;
+    i32Array[4] = texture.format;
+    return ptr(buff);
+}
 
 export function vec2DToArray(vec: Vector2) {
     return Float32Array.of(vec.x, vec.y);

@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include <stdio.h>
 
 Vector2 newVec(double x, double y) {
     Vector2 v = {x, y};
@@ -6,19 +7,17 @@ Vector2 newVec(double x, double y) {
 }
 
 int main() {
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    const int WIDTH = 800;
+    const int HEIGHT = 450;
 
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - keyboard input");
+    InitWindow(WIDTH, HEIGHT, "raylib [core] example - keyboard input");
     SetTargetFPS(60);
     while (!WindowShouldClose()) {
         BeginDrawing();
             ClearBackground(RAYWHITE);
-            DrawText("move the ball with arrow keys", 10, 10, 20, DARKGRAY);
-            DrawTriangle(newVec(100, 10), newVec(10, 100), newVec(100, 100), RED);
         EndDrawing();
     }
-    CloseWindow();
 
+    CloseWindow();
     return 0;
 }
