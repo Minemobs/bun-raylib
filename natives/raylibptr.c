@@ -29,3 +29,7 @@ RLAPI void freeMem(void* ptr) {
 RLAPI void ptr_UnloadTexture(Texture* texture) {
     UnloadTexture(*texture);
 }
+
+RLAPI void ptr_DrawLineEx(Vector2* startPos, Vector2* endPos, float thick, Color color) {
+    DrawLineEx(*startPos, *endPos, thick, color);
+}

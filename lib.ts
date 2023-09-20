@@ -1,4 +1,4 @@
-import { dlopen, ptr, read, suffix, toArrayBuffer } from "bun:ffi";
+import { dlopen, read, suffix } from "bun:ffi";
 import { Color, Colors, Keys, MouseButton, Texture2D, Vector2, f32, i32, isInteger, textureToPointer, throwIfNotF32, throwIfNotI32, toCString, vec2DToArray } from "./utils";
 
 const path = `libraylib.${suffix}`;
@@ -55,17 +55,29 @@ const {
         returns: "i32"
     },
     IsMouseButtonReleased: {
-        args: ["int"],
+        args: ["i32"],
         returns: "bool"
     },
     IsMouseButtonPressed: {
-        args: ["int"],
+        args: ["i32"],
         returns: "bool"
     },
     IsMouseButtonDown: {
-        args: ["int"],
+        args: ["i32"],
         returns: "bool"
     },
+    DrawCircle: {
+        args: ["i32", "i32", "f32", "i32"]
+    },
+    DrawRectangle: {
+        args: ["i32", "i32", "i32", "i32", "i32"]
+    },
+    DrawLine: {
+        args: ["i32", "i32", "i32", "i32", "i32"]
+    },
+    DrawPixel: {
+        args: ["i32", "i32", "i32"]
+    }
 });
 
 const {
@@ -89,7 +101,10 @@ const {
     },
     freeMem: {
         args: ["ptr"]
-    }
+    },
+    ptr_DrawLineEx: {
+        args: ["ptr", "ptr", "f32", "i32"]
+    },
 });
 
 export function initWindow(width: i32, height: i32, title: string) {
@@ -170,10 +185,20 @@ export function getKeyPressed() : Keys {
 }
 
 export function drawLineV(startPos: Vector2, endPos: Vector2, color: Color) {
+    throwIfNotI32(startPos.x, "startPos.x");
+    throwIfNotI32(startPos.y, "startPos.y");
+    throwIfNotI32(endPos.x, "endPos.x");
+    throwIfNotI32(endPos.y, "endPos.y");
     return raylibPtr.ptr_DrawLineV(vec2DToArray(startPos), vec2DToArray(endPos), toColor(color));
 }
 
 export function drawTriangle(v1: Vector2, v2: Vector2, v3: Vector2, color: Color) {
+    throwIfNotI32(v1.x, "v1.x");
+    throwIfNotI32(v1.y, "v1.y");
+    throwIfNotI32(v2.x, "v2.x");
+    throwIfNotI32(v2.y, "v2.y");
+    throwIfNotI32(v3.x, "v3.x");
+    throwIfNotI32(v3.y, "v3.y");
     return raylibPtr.ptr_DrawTriangle(vec2DToArray(v1), vec2DToArray(v2), vec2DToArray(v3), toColor(color));
 }
 
@@ -207,5 +232,51 @@ export function unloadTexture(texture: Texture2D) {
 }
 
 export function drawTexture(texture: Texture2D, vec: Vector2, color: Color) {
+    throwIfNotI32(vec.x, "pos.x");
+    throwIfNotI32(vec.y, "pos.y");
     raylibPtr.ptr_DrawTexture(textureToPointer(texture), vec.x, vec.y, toColor(color));
+}
+
+export function drawFPS(posX: i32, posY: i32) {
+    throwIfNotI32(posX, "posX");
+    throwIfNotI32(posY, "posY");
+    raylib.DrawFPS(posX, posY);
+}
+
+export function drawCircle(centerX: i32, centerY: i32, radiusF: f32, color: Color) {
+    throwIfNotI32(centerX, "centerX");
+    throwIfNotI32(centerY, "centerY");
+    throwIfNotF32(radiusF, "radiusF");
+    raylib.DrawCircle(centerX, centerY, radiusF, toColor(color));
+}
+
+export function drawRectangle(posX: i32, posY: i32, width: i32, height: i32, color: Color) {
+    throwIfNotI32(posX, "posX");
+    throwIfNotI32(posY, "posY");
+    throwIfNotI32(width, "width");
+    throwIfNotI32(height, "height");
+    raylib.DrawRectangle(posX, posY, width, height, toColor(color));
+}
+
+export function drawPixel(posX: i32, posY: i32, color: Color) {
+    throwIfNotI32(posX, "posX");
+    throwIfNotI32(posY, "posY");
+    raylib.DrawPixel(posX, posY, toColor(color));
+}
+
+export function drawLine(startPos: Vector2, endPos: Vector2, color: Color) {
+    throwIfNotI32(startPos.x, "startPos.x");
+    throwIfNotI32(startPos.y, "startPos.y");
+    throwIfNotI32(endPos.x, "endPos.x");
+    throwIfNotI32(endPos.y, "endPos.y");
+    raylib.DrawLine(startPos.x, startPos.y, endPos.x, endPos.y, toColor(color));
+}
+
+export function drawLineEx(startPos: Vector2, endPos: Vector2, thick: number, color: Color) {
+    throwIfNotI32(startPos.x, "startPos.x");
+    throwIfNotI32(startPos.y, "startPos.y");
+    throwIfNotI32(endPos.x, "endPos.x");
+    throwIfNotI32(endPos.y, "endPos.y");
+    throwIfNotF32(thick, "thick");
+    raylibPtr.ptr_DrawLineEx(vec2DToArray(startPos), vec2DToArray(endPos), thick, toColor(color));
 }

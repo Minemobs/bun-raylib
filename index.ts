@@ -2,6 +2,8 @@ import {
   clearBackground,
   closeWindow,
   draw,
+  drawFPS,
+  drawLineEx,
   drawLineV,
   drawText,
   drawTriangle,
@@ -23,6 +25,7 @@ setTargetFPS(60);
 const array : Vector2[] = [];
 run(() => {
   draw(() => {
+    drawFPS(10, 10);
     clearBackground("RAY_WHITE");
     drawTriangle({x: 100.0, y: 10.0}, {x: 10.0, y: 100.0}, {x: 100.0, y: 100.0}, "BLACK");
     drawLineV({x: 100, y: 100}, {x: 200, y: 200}, "BLACK");
@@ -40,7 +43,7 @@ run(() => {
       }
     }
     if(array.length === 2) {
-      drawLineV(array[0], array[1], "RED");
+      drawLineEx(array[0], array[1], 10, "RED");
     }
   });
 });
