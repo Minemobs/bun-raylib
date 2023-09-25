@@ -3,9 +3,12 @@ import { ptr } from "bun:ffi";
 export type u32 = number;
 export type i32 = number;
 export type f32 = number;
+
 export type Vector2 = { x: f32, y: f32 };
 export type Texture2D = { id: u32, width: i32, height: i32, mimaps: i32, format: i32 };
 export type Texture = Texture2D;
+
+const tempF32Array = new Float32Array(1);
 
 export function textureToPointer(texture: Texture2D) {
     const buff = new ArrayBuffer(20);
@@ -26,7 +29,7 @@ export function clamp(min: number, max: number, num: number) {
     return Math.min(Math.max(num, min), max);
 }
 
-export function getColor(r: number, g: number, b: number, a = 255) {
+export function getColor(r: number, g: number, b: number, a = 255) : u32 {
     return (clamp(0, 255, r) & 0xff) | ((clamp(0, 255, g) & 0xff) << 8) | ((clamp(0, 255, b) & 0xff) << 16) | ((clamp(0, 255, a) & 0xff) << 24);
 }
 
@@ -35,13 +38,20 @@ export function toCString(str: string) {
 }
 
 export function isInteger(num: number) {
-    if(num > 2_147_483_647 || num < -2_147_483_648) return false;
+    if(num > 2**32-1 || num < -(2**32)/2) return false;
+    if(Math.round(num) !== num) return false;
+    return true;
+}
+
+export function isUnsignedInteger(num: number) {
+    if(num < 0 || num > 2**32-1) return false;
     if(Math.round(num) !== num) return false;
     return true;
 }
 
 export function isFloat(num: number) {
-    if(num < 3.4028235e+38 || num > 1.4e-45) return false;
+    tempF32Array[0] = num;
+    if(tempF32Array[0] === Infinity || tempF32Array[0] === -Infinity) return false;
     return true;
 }
 
@@ -49,8 +59,12 @@ export function throwIfNotI32(variable: number, variableName: string) {
     if(!isInteger(variable)) throw new Error(variableName + " isn't a i32");
 }
 
+export function throwIfNotU32(variable: number, variableName: string) {
+    if(!isUnsignedInteger(variable)) throw new Error(variableName + " isn't a i32");
+}
+
 export function throwIfNotF32(variable: number, variableName: string) {
-    if(!isInteger(variable)) throw new Error(variableName + " isn't a f32");
+    if(!isFloat(variable)) throw new Error(variableName + " isn't a f32");
 }
 
 export const Colors = {
@@ -81,7 +95,7 @@ export const Colors = {
     RAY_WHITE: getColor(245, 245, 245, 255),
 } as const;
 
-export type Color = keyof typeof Colors | i32;
+export type Color = keyof typeof Colors | u32;
 
 export const enum MouseButton {
     LEFT,

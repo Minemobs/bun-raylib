@@ -1,5 +1,5 @@
 import { dlopen, read, suffix } from "bun:ffi";
-import { Color, Colors, Keys, MouseButton, Texture2D, Vector2, f32, i32, isInteger, textureToPointer, throwIfNotF32, throwIfNotI32, toCString, vec2DToArray } from "./utils";
+import { Color, Colors, Keys, MouseButton, Texture2D, Vector2, f32, i32, isInteger, textureToPointer, throwIfNotF32, throwIfNotI32, throwIfNotU32, toCString, vec2DToArray } from "./utils";
 
 const path = `libraylib.${suffix}`;
 
@@ -111,9 +111,10 @@ export function initWindow(width: i32, height: i32, title: string) {
     raylib.InitWindow(width, height, toCString(title));
 }
 
-function toColor(color: Color) : number {
-    if(typeof color === "number") return color;
-    return Colors[color];
+function toColor(color: Color, variableName = "color") : number {
+    if(typeof color === "string") return Colors[color];
+    throwIfNotU32(color, variableName);
+    return color;
 }
 
 export function clearBackground(color: Color) {
@@ -141,13 +142,11 @@ export function closeWindow() {
     raylib.CloseWindow();
 }
 
-export function drawCircleGradient(centerX: i32, centerY: i32, radiusF: f32, colorFrom: keyof typeof Colors | number, colorTo: keyof typeof Colors | number) {
+export function drawCircleGradient(centerX: i32, centerY: i32, radiusF: f32, colorFrom: Color, colorTo: Color) {
     throwIfNotI32(centerX, "centerX");
     throwIfNotI32(centerY, "centerY");
     throwIfNotF32(radiusF, "radiusF");
-    if(typeof colorFrom === "number" && !isInteger(colorFrom)) throw new Error("colorFrom isn't a i32");
-    if(typeof colorTo === "number" && !isInteger(colorTo)) throw new Error("colorTo isn't a i32");
-    raylib.DrawCircleGradient(centerX, centerY, radiusF, toColor(colorFrom), toColor(colorTo));
+    raylib.DrawCircleGradient(centerX, centerY, radiusF, toColor(colorFrom, "colorFrom"), toColor(colorTo, "colorTo"));
 }
 
 export function drawText(text: string, posX: number, posY: number, fontSize: number, color: Color) {
