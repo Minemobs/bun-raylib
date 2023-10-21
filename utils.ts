@@ -25,6 +25,14 @@ export function vec2DToArray(vec: Vector2) {
     return Float32Array.of(vec.x, vec.y);
 }
 
+export function copyVector(vec: Vector2): Vector2 {
+    return { x: vec.x, y: vec.y };
+}
+
+export function clampVector(min: Vector2, max: Vector2, vec: Vector2): Vector2 {
+    return { x: clamp(min.x, max.x, vec.x), y: clamp(min.y, max.y, vec.y) };
+}
+
 export function clamp(min: number, max: number, num: number) {
     return Math.min(Math.max(num, min), max);
 }

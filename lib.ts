@@ -77,6 +77,12 @@ const {
     },
     DrawPixel: {
         args: ["i32", "i32", "i32"]
+    },
+    GetFrameTime: {
+        returns: "f32"
+    },
+    GetTime: {
+        returns: "f64"
     }
 });
 
@@ -153,7 +159,6 @@ export function drawText(text: string, posX: number, posY: number, fontSize: num
     throwIfNotI32(posX, "posX");
     throwIfNotI32(posY, "posY");
     throwIfNotI32(fontSize, "fontSize");
-    if(typeof color === "number" && !isInteger(color)) throw new Error("color isn't a i32");
     raylib.DrawText(toCString(text), posX, posY, fontSize, toColor(color));
 }
 
@@ -278,4 +283,16 @@ export function drawLineEx(startPos: Vector2, endPos: Vector2, thick: number, co
     throwIfNotI32(endPos.y, "endPos.y");
     throwIfNotF32(thick, "thick");
     raylibPtr.ptr_DrawLineEx(vec2DToArray(startPos), vec2DToArray(endPos), thick, toColor(color));
+}
+
+export function getFrameTime() {
+    return raylib.GetFrameTime();
+}
+
+export function deltaTime() {
+    return getFrameTime();
+}
+
+export function getTime() {
+    return raylib.GetTime();
 }
