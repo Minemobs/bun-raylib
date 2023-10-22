@@ -1,5 +1,5 @@
-import { dlopen, read, suffix } from "bun:ffi";
-import { Color, Colors, Keys, MouseButton, Texture2D, Vector2, f32, i32, isInteger, textureToPointer, throwIfNotF32, throwIfNotI32, throwIfNotU32, toCString, vec2DToArray } from "./utils";
+import { dlopen, suffix } from "bun:ffi";
+import { Color, Colors, Image, Image2D, Keys, MouseButton, Texture, Texture2D, Vector2, f32, i32, imageFromPointer, imageToPointer, isInteger, textureFromPointer, textureToPointer, throwIfNotF32, throwIfNotI32, throwIfNotU32, toCString, vec2DToArray } from "./utils";
 
 const path = `libraylib.${suffix}`;
 
@@ -111,6 +111,23 @@ const {
     ptr_DrawLineEx: {
         args: ["ptr", "ptr", "f32", "i32"]
     },
+    ptr_ImageResize: {
+        args: ["ptr", "i32", "i32"]
+    },
+    ptr_ImageResizeNN: {
+        args: ["ptr", "i32", "i32"]
+    },
+    ptr_UnloadImage: {
+        args: ["ptr"]
+    },
+    ptr_LoadTextureFromImage: {
+        args: ["ptr"],
+        returns: "ptr"
+    },
+    ptr_LoadImage: {
+        args: ["cstring"],
+        returns: "ptr"
+    }
 });
 
 export function initWindow(width: i32, height: i32, title: string) {
@@ -219,15 +236,7 @@ export function isMouseButtonPressed(button: MouseButton) {
 }
 
 export function loadTexture(filePath: string) : Texture2D {
-    const pointer = raylibPtr.ptr_LoadTexture(toCString(filePath))!;
-    const texture : Texture2D = {
-        id: read.u32(pointer, 0),
-        width: read.i32(pointer, 4),
-        height: read.i32(pointer, 8),
-        mimaps: read.i32(pointer, 12),
-        format: read.i32(pointer, 16)
-    };
-    raylibPtr.freeMem(pointer);
+    const texture = textureFromPointer(raylibPtr.ptr_LoadTexture(toCString(filePath))!);
     return texture;
 }
 
@@ -295,4 +304,37 @@ export function deltaTime() {
 
 export function getTime() {
     return raylib.GetTime();
+}
+
+export function freeMem(ptr: NonNullable<Parameters<typeof raylibPtr.freeMem>[0]>) {
+    raylibPtr.freeMem(ptr);
+}
+
+export function imageResize(image: Image, newWidth: i32, newHeight: i32) {
+    throwIfNotI32(newWidth, "newWidth");
+    throwIfNotI32(newHeight, "newHeight");
+    const ptr = imageToPointer(image);
+    raylibPtr.ptr_ImageResize(ptr, newWidth, newHeight);
+    return imageFromPointer(ptr);
+}
+
+export function imageResizeNN(image: Image, newWidth: i32, newHeight: i32): Image {
+    throwIfNotI32(newWidth, "newWidth");
+    throwIfNotI32(newHeight, "newHeight");
+    const ptr = imageToPointer(image);
+    raylibPtr.ptr_ImageResizeNN(ptr, newWidth, newHeight);
+    return imageFromPointer(ptr);
+}
+
+export function unloadImage(image: Image) {
+    raylibPtr.ptr_UnloadImage(imageToPointer(image));
+}
+
+export function loadTextureFromImage(image: Image): Texture {
+    const ptr = raylibPtr.ptr_LoadTextureFromImage(imageToPointer(image))!;
+    return textureFromPointer(ptr);
+}
+
+export function loadImage(filePath: string): Image {
+    return imageFromPointer(raylibPtr.ptr_LoadImage(toCString(filePath))!);
 }

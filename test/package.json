@@ -1,0 +1,13 @@
+{
+  "name": "test",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "bun-types": "latest",
+    "jimp": "^0.22.10",
+    "bun-raylib": "../"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

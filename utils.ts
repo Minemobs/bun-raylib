@@ -1,4 +1,5 @@
-import { ptr } from "bun:ffi";
+import { Pointer, ptr, read } from "bun:ffi";
+import { freeMem } from "./lib";
 
 export type u32 = number;
 export type i32 = number;
@@ -6,23 +7,75 @@ export type f32 = number;
 
 export type Vector2 = { x: f32, y: f32 };
 export type Texture2D = { id: u32, width: i32, height: i32, mimaps: i32, format: i32 };
+export type Image2D = { data: Pointer, width: i32, height: i32, mimaps: i32, format: i32 };
 export type Texture = Texture2D;
+export type Image = Image2D;
 
 const tempF32Array = new Float32Array(1);
+const PTR_BYTE_SIZE = process.arch === "arm64" || process.arch === "x64" ? 8 : 4;
 
 export function textureToPointer(texture: Texture2D) {
     const buff = new ArrayBuffer(20);
     new Uint32Array(buff, 0, 1)[0] = texture.id;
-    const i32Array = new Int32Array(buff, 0, 4);
-    i32Array[1] = texture.width;
-    i32Array[2] = texture.height;
-    i32Array[3] = texture.mimaps;
-    i32Array[4] = texture.format;
+    const i32Array = new Int32Array(buff, 4, 4);
+    i32Array[0] = texture.width;
+    i32Array[1] = texture.height;
+    i32Array[2] = texture.mimaps;
+    i32Array[3] = texture.format;
     return ptr(buff);
+}
+
+export function imageToPointer(image: Image2D) {
+    const buff = new ArrayBuffer(20 + PTR_BYTE_SIZE);
+    new BigUint64Array(buff, 0, 1)[0] = BigInt(image.data);
+    const i32Array = new Int32Array(buff, 8, 4);
+    i32Array[0] = image.width;
+    i32Array[1] = image.height;
+    i32Array[2] = image.mimaps;
+    i32Array[3] = image.format;
+    return ptr(buff);
+}
+
+/**
+ * This function does NOT free the memory
+ */
+export function imageFromPointer(pointer: Pointer): Image2D {
+    const i: Image2D = {
+        data: read.ptr(pointer, 0),
+        width: read.i32(pointer, PTR_BYTE_SIZE),
+        height: read.i32(pointer, 12),
+        mimaps: read.i32(pointer, 16),
+        format: read.i32(pointer, 20)
+    };
+    //freeMem(pointer);
+    return i;
+}
+
+/**
+ * This function does NOT free the memory
+ */
+export function textureFromPointer(pointer: Pointer): Texture {
+    const t: Texture2D = {
+        id: read.u32(pointer, 0),
+        width: read.i32(pointer, 4),
+        height: read.i32(pointer, 8),
+        mimaps: read.i32(pointer, 12),
+        format: read.i32(pointer, 16)
+    };
+    freeMem(pointer);
+    return t;
 }
 
 export function vec2DToArray(vec: Vector2) {
     return Float32Array.of(vec.x, vec.y);
+}
+
+export function roundVector(vec: Vector2): Vector2 {
+    return { x: Math.round(vec.x), y: Math.round(vec.y) };
+}
+
+export function newVector(val: number) {
+    return { x: Math.round(val), y: Math.round(val) };
 }
 
 export function copyVector(vec: Vector2): Vector2 {
