@@ -60,3 +60,7 @@ RLAPI void ptr_ImageResizeNN(Image* image, int width, int height) {
 RLAPI void ptr_UnloadImage(Image* image) {
     UnloadImage(*image);
 }
+
+RLAPI bool ptr_CheckCollisionRecs(Rectangle* rec1, Rectangle* rec2) {
+    return CheckCollisionRecs(*rec1, *rec2);
+}

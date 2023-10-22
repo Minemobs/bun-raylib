@@ -1,5 +1,5 @@
 import { dlopen, suffix } from "bun:ffi";
-import { Color, Colors, Image, Image2D, Keys, MouseButton, Texture, Texture2D, Vector2, f32, i32, imageFromPointer, imageToPointer, isInteger, textureFromPointer, textureToPointer, throwIfNotF32, throwIfNotI32, throwIfNotU32, toCString, vec2DToArray } from "./utils";
+import { Color, Colors, Image, Image2D, Keys, MouseButton, Rectangle, Texture, Texture2D, Vector2, f32, i32, imageFromPointer, imageToPointer, isInteger, rectangleToPointer, textureFromPointer, textureToPointer, throwIfNotF32, throwIfNotI32, throwIfNotU32, toCString, vec2DToArray } from "./utils";
 
 const path = `libraylib.${suffix}`;
 
@@ -127,6 +127,10 @@ const {
     ptr_LoadImage: {
         args: ["cstring"],
         returns: "ptr"
+    },
+    ptr_CheckCollisionRecs: {
+        args: ["ptr", "ptr"],
+        returns: "bool"
     }
 });
 
@@ -337,4 +341,8 @@ export function loadTextureFromImage(image: Image): Texture {
 
 export function loadImage(filePath: string): Image {
     return imageFromPointer(raylibPtr.ptr_LoadImage(toCString(filePath))!);
+}
+
+export function checkCollisionRecs(rec1: Rectangle, rec2: Rectangle) {
+    return raylibPtr.ptr_CheckCollisionRecs(rectangleToPointer(rec1), rectangleToPointer(rec2));
 }

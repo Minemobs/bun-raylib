@@ -10,9 +10,29 @@ export type Texture2D = { id: u32, width: i32, height: i32, mimaps: i32, format:
 export type Image2D = { data: Pointer, width: i32, height: i32, mimaps: i32, format: i32 };
 export type Texture = Texture2D;
 export type Image = Image2D;
+export type Rectangle = { x: f32, y: f32, width: f32, height: f32 };
 
 const tempF32Array = new Float32Array(1);
 const PTR_BYTE_SIZE = process.arch === "arm64" || process.arch === "x64" ? 8 : 4;
+
+export function rectangleToPointer(rect: Rectangle) {
+    const buff = new ArrayBuffer(16);
+    const f32Array = new Float32Array(buff, 0, 4);
+    f32Array[0] = rect.x;
+    f32Array[1] = rect.y;
+    f32Array[2] = rect.width;
+    f32Array[3] = rect.height;
+    return ptr(buff);
+}
+
+export function rectangleFromPointer(pointer: Pointer): Rectangle {
+    return {
+        x: read.f32(pointer, 0),
+        y: read.f32(pointer, 4),
+        width: read.f32(pointer, 8),
+        height: read.f32(pointer, 12)
+    };
+}
 
 export function textureToPointer(texture: Texture2D) {
     const buff = new ArrayBuffer(20);

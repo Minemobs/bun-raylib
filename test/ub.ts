@@ -1,5 +1,5 @@
-import { clearBackground, closeWindow, deltaTime, draw, drawCircle, drawTexture, imageResize, imageResizeNN, initWindow, isKeyDown, loadImage, loadTexture, loadTextureFromImage, run, setTargetFPS, unloadImage } from "bun-raylib/lib";
-import { Keys, Vector2, clampVector, copyVector, newVector, roundVector } from "bun-raylib/utils";
+import { checkCollisionRecs, clearBackground, closeWindow, deltaTime, draw, drawTexture, imageResizeNN, initWindow, isKeyDown, loadImage, loadTextureFromImage, run, setTargetFPS, unloadImage, unloadTexture } from "bun-raylib/lib";
+import { Keys, Rectangle, Texture, Vector2, clampVector, copyVector, newVector, roundVector } from "bun-raylib/utils";
 
 const [WIDTH, HEIGHT] = [800, 450] as const;
 const PLAYER_SIZE = 50;
@@ -26,6 +26,7 @@ setTargetFPS(60);
 const playerTexture = loadPlayerTexture();
 const platformTexture = loadPlatformTexture();
 let platformPos: Vector2 = { x: Math.round((WIDTH - platformTexture.width / 2) / 2), y: 300 };
+let jumpingTick = 0;
 
 run(() => {
     handleMovement();
@@ -36,22 +37,37 @@ run(() => {
     });
 });
 
+unloadTexture(playerTexture);
+unloadTexture(platformTexture);
 closeWindow();
 
 function handleMovement() {
     let newPlayerPos: Vector2 = copyVector(playerPos);
-    if(isKeyDown(Keys.KEY_W)) {
-        newPlayerPos.y -= 300 * deltaTime();
-    }
-    if (isKeyDown(Keys.KEY_S)) {
-        newPlayerPos.y += 300 * deltaTime();
+    const movementSpeed = 300 * deltaTime();
+    const platformRect = newRectangle(platformPos, { x: platformTexture.width, y: platformTexture.height });
+    if(jumpingTick !== 0) {
+        jumpingTick--;
+        newPlayerPos.y -= 100 * deltaTime();
     }
     if (isKeyDown(Keys.KEY_A)) {
-        newPlayerPos.x -= 300 * deltaTime();
+        newPlayerPos.x -= movementSpeed;
     }
     if (isKeyDown(Keys.KEY_D)) {
-        newPlayerPos.x += 300 * deltaTime();
+        newPlayerPos.x += movementSpeed;
     }
-
+    const isOnGround = checkCollisionRecs(newRectangle(playerPos, newVector(PLAYER_SIZE)), platformRect);
+    if (isKeyDown(Keys.KEY_SPACE) && isOnGround) {
+        jumpingTick = 40;
+    } else if(!isOnGround && jumpingTick === 0) {
+        newPlayerPos.y += 200 * deltaTime();
+    }
     playerPos = clampVector(newVector(0), {x: WIDTH - PLAYER_SIZE, y: HEIGHT - PLAYER_SIZE}, roundVector(newPlayerPos));
+    if(playerPos.y === HEIGHT - PLAYER_SIZE) {
+        playerPos.y = Math.round(HEIGHT / 2);
+        playerPos.x = Math.round(WIDTH / 2);
+    }
+}
+
+function newRectangle(pos: Vector2, size: Vector2): Rectangle {
+    return { x: pos.x, y: pos.y, width: size.x, height: size.y };
 }
