@@ -1,7 +1,8 @@
 import { dlopen, suffix } from "bun:ffi";
-import { Color, Colors, Image, Image2D, Keys, MouseButton, Rectangle, Texture, Texture2D, Vector2, f32, i32, imageFromPointer, imageToPointer, isInteger, rectangleToPointer, textureFromPointer, textureToPointer, throwIfNotF32, throwIfNotI32, throwIfNotU32, toCString, vec2DToArray } from "./utils";
+import { Color, Colors, Image, Keys, MouseButton, Rectangle, Texture, Texture2D, Vector2, f32, i32, imageFromPointer, imageToPointer, isInteger, rectangleToPointer, textureFromPointer, textureToPointer, throwIfNotF32, throwIfNotI32, throwIfNotU32, toCString, vec2DToArray } from "./utils";
 
-const path = `libraylib.${suffix}`;
+const path = `${import.meta.dir}/libraylib.${suffix}`;
+console.log(path);
 
 const {
   symbols: raylib
@@ -88,7 +89,7 @@ const {
 
 const {
     symbols: raylibPtr,
-} = dlopen(`libraylibptr.${suffix}`, {
+} = dlopen(`${import.meta.dir}/libraylibptr.${suffix}`, {
     ptr_DrawLineV: {
         args: ["ptr", "ptr", "i32"],
     },

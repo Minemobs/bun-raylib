@@ -1,16 +1,29 @@
 {
-  "name": "testffi",
+  "name": "bun-raylib",
   "module": "index.ts",
   "type": "module",
+  "version": "0.0.1",
+  "author": "minemobs",
+  "keywords": ["bun", "raylib"],
+  "description": "A wrapper for raylib (requires bun)",
+  "license": "MIT",
+  "homepage": "https://github.com/minemobs/bun-raylib",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/minemobs/bun-raylib.git"
+  },
+  "files": ["./dist", "./index.ts"],
   "devDependencies": {
-    "bun-types": "^1.0.2"
+    "bun-types": "^1.0.7"
   },
   "peerDependencies": {
     "typescript": "^5.2.2"
   },
   "scripts": {
     "compile": "gcc -c -Wall -Werror -fpic natives/raylibptr.c -Lraylib -o natives/raylibptr.o && gcc -shared -lraylib -o libraylibptr.so natives/raylibptr.o",
-    "preinstall": "bun run ./compile.ts && bun run compile",
-    "run": "bun compile && bun ./index.ts"
+    "preinstall": "bun run ./compile-raylib.ts && bun run compile",
+    "run": "bun compile && bun ./test/index.ts",
+    "build": "bun run build.ts",
+    "prepublishOnly": "bun run preinstall && bun run build"
   }
 }
