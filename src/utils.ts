@@ -163,7 +163,7 @@ export function throwIfNotI32(variable: number, variableName: string) {
 }
 
 export function throwIfNotU32(variable: number, variableName: string) {
-    if(!isUnsignedInteger(variable)) throw new Error(variableName + " isn't a i32");
+    if(!isUnsignedInteger(variable)) throw new Error(variableName + " isn't a u32");
 }
 
 export function throwIfNotF32(variable: number, variableName: string) {

@@ -145,7 +145,7 @@ export function initWindow(width: i32, height: i32, title: string) {
 
 function toColor(color: Color, variableName = "color") : number {
     if(typeof color === "string") return Colors[color];
-    throwIfNotU32(color, variableName);
+    throwIfNotI32(color, variableName);
     return color;
 }
 
