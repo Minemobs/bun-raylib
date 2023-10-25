@@ -2,7 +2,7 @@
   "name": "bun-raylib",
   "module": "index.ts",
   "type": "module",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "minemobs",
   "keywords": ["bun", "raylib"],
   "description": "A wrapper for raylib (requires bun)",

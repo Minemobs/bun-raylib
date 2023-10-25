@@ -11,9 +11,31 @@ export type Image2D = { data: Pointer, width: i32, height: i32, mimaps: i32, for
 export type Texture = Texture2D;
 export type Image = Image2D;
 export type Rectangle = { x: f32, y: f32, width: f32, height: f32 };
+export type Camera2D = { offset: Vector2, target: Vector2, rotation: f32, zoom: f32 };
 
 const tempF32Array = new Float32Array(1);
 const PTR_BYTE_SIZE = process.arch === "arm64" || process.arch === "x64" ? 8 : 4;
+
+export function camera2DFromPointer(pointer: Pointer) {
+    return {
+        offset: { x: read.f32(pointer, 0), y: read.f32(pointer, 4) },
+        target: { x: read.f32(pointer, 8), y: read.f32(pointer, 12) },
+        rotation: read.f32(pointer, 16),
+        zoom: read.f32(pointer, 20)
+    };
+}
+
+export function camera2DToPointer(camera2D: Camera2D) {
+    const buff = new ArrayBuffer(24);
+    const f32Array = new Float32Array(buff, 0, 6);
+    f32Array[0] = camera2D.offset.x;
+    f32Array[1] = camera2D.offset.y;
+    f32Array[2] = camera2D.target.x;
+    f32Array[3] = camera2D.target.y;
+    f32Array[4] = camera2D.rotation;
+    f32Array[5] = camera2D.zoom;
+    return ptr(buff);
+}
 
 export function rectangleToPointer(rect: Rectangle) {
     const buff = new ArrayBuffer(16);

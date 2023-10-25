@@ -1,5 +1,5 @@
 import { dlopen, suffix } from "bun:ffi";
-import { Color, Colors, Image, Keys, MouseButton, Rectangle, Texture, Texture2D, Vector2, f32, i32, imageFromPointer, imageToPointer, isInteger, rectangleToPointer, textureFromPointer, textureToPointer, throwIfNotF32, throwIfNotI32, throwIfNotU32, toCString, vec2DToArray } from "./utils";
+import { Camera2D, Color, Colors, Image, Keys, MouseButton, Rectangle, Texture, Texture2D, Vector2, camera2DToPointer, f32, i32, imageFromPointer, imageToPointer, isInteger, rectangleToPointer, textureFromPointer, textureToPointer, throwIfNotF32, throwIfNotI32, throwIfNotU32, toCString, vec2DToArray } from "./utils";
 
 const path = `${import.meta.dir}/libraylib.${suffix}`;
 console.log(path);
@@ -84,7 +84,8 @@ const {
     },
     GetTime: {
         returns: "f64"
-    }
+    },
+    EndMode2D: {}
 });
 
 const {
@@ -132,6 +133,9 @@ const {
     ptr_CheckCollisionRecs: {
         args: ["ptr", "ptr"],
         returns: "bool"
+    },
+    ptr_BeginMode2D: {
+        args: ["ptr"]
     }
 });
 
@@ -346,4 +350,12 @@ export function loadImage(filePath: string): Image {
 
 export function checkCollisionRecs(rec1: Rectangle, rec2: Rectangle) {
     return raylibPtr.ptr_CheckCollisionRecs(rectangleToPointer(rec1), rectangleToPointer(rec2));
+}
+
+export function beginMode2D(camera: Camera2D) {
+    return raylibPtr.ptr_BeginMode2D(camera2DToPointer(camera));
+}
+
+export function endMode2D() {
+    raylib.EndMode2D();
 }

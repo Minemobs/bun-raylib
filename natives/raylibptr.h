@@ -14,3 +14,4 @@ RLAPI void ptr_ImageResize(Image* image, int width, int height);
 RLAPI void ptr_ImageResizeNN(Image* image, int width, int height);
 RLAPI void ptr_UnloadImage(Image* image);
 RLAPI bool ptr_CheckCollisionRecs(Rectangle* rec1, Rectangle* rec2);
+RLAPI void ptr_BeginMode2D(Camera2D* camera);

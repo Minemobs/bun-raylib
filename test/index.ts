@@ -1,4 +1,5 @@
 import {
+  newVector,
   clearBackground,
   closeWindow,
   draw,
@@ -15,8 +16,15 @@ import {
   isMouseButtonReleased,
   run,
   setTargetFPS,
-} from "../src/lib";
-import { Keys, MouseButton, Vector2, i32, isInteger } from "../src/utils";
+  Keys,
+  MouseButton,
+  Vector2,
+  i32,
+  isInteger,
+  clamp
+} from "..";
+import { beginMode2D, endMode2D } from "../src/lib";
+import { Camera2D } from "../src/utils";
 
 const [WIDTH, HEIGHT] = [800, 450] as const;
 
@@ -25,17 +33,20 @@ setTargetFPS(60);
 
 function testAllFunctions() {
   const array : Vector2[] = [];
+  const camera: Camera2D = {
+    offset: newVector(0),
+    target: newVector(0),
+    rotation: 0,
+    zoom: 1
+  };
   run(() => {
     draw(() => {
       drawFPS(10, 10);
       clearBackground("RAY_WHITE");
+      beginMode2D(camera);
       drawTriangle({x: 100.0, y: 10.0}, {x: 10.0, y: 100.0}, {x: 100.0, y: 100.0}, "BLACK");
       drawLineV({x: 100, y: 100}, {x: 200, y: 200}, "BLACK");
-      if(isKeyDown(Keys.KEY_SPACE)) {
-        drawText("Hello World", 190, 200, 20, "BLACK");
-      }
-      drawText("Mouse X: " + getMouseX(), WIDTH / 2, HEIGHT / 2 - 40, 20, "BLACK");
-      drawText("Mouse Y: " + getMouseY(), WIDTH / 2, HEIGHT / 2 + 40, 20, "BLACK");
+      endMode2D();
       if(isMouseButtonReleased(MouseButton.LEFT)) {
         if(array.length == 2) {
           array[0] = array[1];
@@ -44,9 +55,19 @@ function testAllFunctions() {
           array.push({x: getMouseX(), y: getMouseY()});
         }
       }
+      if(isKeyDown(Keys.KEY_SPACE)) {
+        if(isKeyDown(Keys.KEY_LEFT_CONTROL)) camera.zoom -= 0.1;
+        else camera.zoom += 0.1;
+        camera.zoom = clamp(1, 2, camera.zoom);
+      }
       if(array.length === 2) {
         drawLineEx(array[0], array[1], 10, "RED");
       }
+      if(isKeyDown(Keys.KEY_SPACE)) {
+        drawText("Hello World", 190, 200, 20, "BLACK");
+      }
+      drawText("Mouse X: " + getMouseX(), WIDTH / 2, HEIGHT / 2 - 40, 20, "BLACK");
+      drawText("Mouse Y: " + getMouseY(), WIDTH / 2, HEIGHT / 2 + 40, 20, "BLACK");
     });
   });
 }

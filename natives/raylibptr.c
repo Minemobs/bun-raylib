@@ -64,3 +64,7 @@ RLAPI void ptr_UnloadImage(Image* image) {
 RLAPI bool ptr_CheckCollisionRecs(Rectangle* rec1, Rectangle* rec2) {
     return CheckCollisionRecs(*rec1, *rec2);
 }
+
+RLAPI void ptr_BeginMode2D(Camera2D* camera) {
+    BeginMode2D(*camera);
+}
