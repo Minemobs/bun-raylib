@@ -43,16 +43,23 @@ const {
         args: ["i32"],
         returns: "bool"
     },
-    GetMouseX: {
-        returns: "i32"
+    IsKeyUp: {
+        args: ["i32"],
+        returns: "bool"
     },
-    GetMouseY: {
-        returns: "i32"
+    SetExitKey: {
+        args: ["i32"]
     },
     GetKeyPressed: {
         returns: "i32"
     },
     GetCharPressed: {
+        returns: "i32"
+    },
+    GetMouseX: {
+        returns: "i32"
+    },
+    GetMouseY: {
         returns: "i32"
     },
     IsMouseButtonReleased: {
@@ -212,6 +219,14 @@ export function getCharPressed() : i32 {
 
 export function getKeyPressed() : Keys {
     return raylib.GetKeyPressed();
+}
+
+export function setExitKey(key: Keys) {
+    raylib.SetExitKey(key);
+}
+
+export function isKeyUp(key: Keys) {
+    return raylib.IsKeyUp(key);
 }
 
 export function drawLineV(startPos: Vector2, endPos: Vector2, color: Color) {
