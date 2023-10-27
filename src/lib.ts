@@ -92,7 +92,14 @@ const {
     GetTime: {
         returns: "f64"
     },
-    EndMode2D: {}
+    EndMode2D: {},
+    MeasureText: {
+        args: ["cstring", "i32"],
+        returns: "i32"
+    },
+    ImageRotate: {
+        args: ["ptr", "i32"]
+    },
 });
 
 const {
@@ -126,6 +133,9 @@ const {
     ptr_ImageResizeNN: {
         args: ["ptr", "i32", "i32"]
     },
+    ptr_ImageCrop: {
+        args: ["ptr", "ptr"]
+    },
     ptr_UnloadImage: {
         args: ["ptr"]
     },
@@ -143,6 +153,9 @@ const {
     },
     ptr_BeginMode2D: {
         args: ["ptr"]
+    },
+    ptr_DrawRectangleRounded: {
+        args: ["ptr", "f32", "i32", "i32"]
     }
 });
 
@@ -227,6 +240,10 @@ export function setExitKey(key: Keys) {
 
 export function isKeyUp(key: Keys) {
     return raylib.IsKeyUp(key);
+}
+
+export function drawRectangleRounded(rect: Rectangle, roundness: f32, segments: i32, color: Color) {
+    return raylibPtr.ptr_DrawRectangleRounded(rectangleToPointer(rect), roundness, segments, toColor(color));
 }
 
 export function drawLineV(startPos: Vector2, endPos: Vector2, color: Color) {
@@ -350,6 +367,19 @@ export function imageResizeNN(image: Image, newWidth: i32, newHeight: i32): Imag
     return imageFromPointer(ptr);
 }
 
+export function imageRotate(image: Image, degrees: i32): Image {
+    throwIfNotI32(degrees, "degrees");
+    const ptr = imageToPointer(image);
+    raylib.ImageRotate(ptr, degrees);
+    return imageFromPointer(ptr);
+}
+
+export function imageCrop(image: Image, rectangle: Rectangle): Image {
+    const ptr = imageToPointer(image);
+    raylibPtr.ptr_ImageCrop(ptr, rectangleToPointer(rectangle));
+    return imageFromPointer(ptr);
+}
+
 export function unloadImage(image: Image) {
     raylibPtr.ptr_UnloadImage(imageToPointer(image));
 }
@@ -373,4 +403,8 @@ export function beginMode2D(camera: Camera2D) {
 
 export function endMode2D() {
     raylib.EndMode2D();
+}
+
+export function measureText(text: string, fontSize: i32) {
+    return raylib.MeasureText(toCString(text), fontSize);
 }

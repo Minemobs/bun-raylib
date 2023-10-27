@@ -137,7 +137,7 @@ export function getColor(r: number, g: number, b: number, a = 255) : u32 {
 }
 
 export function toCString(str: string) {
-    return ptr(Buffer.from(str + "\0"));
+    return new TextEncoder().encode(str + "\0");
 }
 
 export function isInteger(num: number) {

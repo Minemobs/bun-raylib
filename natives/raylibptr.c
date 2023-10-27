@@ -20,7 +20,6 @@ RLAPI Texture* ptr_LoadTexture(const char* fileName) {
 
 RLAPI Texture* ptr_LoadTextureFromImage(Image* image) {
     Texture* texture = malloc(sizeof(Texture));
-    //SEGFAULTS HERE
     Texture t = LoadTextureFromImage(*image);
     *texture = t;
     return texture;
@@ -57,6 +56,10 @@ RLAPI void ptr_ImageResizeNN(Image* image, int width, int height) {
     ImageResizeNN(image, width, height);
 }
 
+RLAPI void ptr_ImageCrop(Image* image, Rectangle* rectangle) {
+    ImageCrop(image, *rectangle);
+}
+
 RLAPI void ptr_UnloadImage(Image* image) {
     UnloadImage(*image);
 }
@@ -67,4 +70,8 @@ RLAPI bool ptr_CheckCollisionRecs(Rectangle* rec1, Rectangle* rec2) {
 
 RLAPI void ptr_BeginMode2D(Camera2D* camera) {
     BeginMode2D(*camera);
+}
+
+RLAPI void ptr_DrawRectangleRounded(Rectangle* rec, float roundness, int segments, Color color) {
+    DrawRectangleRounded(*rec, roundness, segments, color);
 }
